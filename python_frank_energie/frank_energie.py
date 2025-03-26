@@ -13,10 +13,10 @@ from .models import (
     Authentication,
     Invoices,
     MarketPrices,
-    Me,
     MonthSummary,
     SmartBatteries,
     SmartBatterySessions,
+    UserSites,
 )
 
 
@@ -220,183 +220,6 @@ class FrankEnergie:
 
         return Invoices.from_dict(await self._query(query))
 
-    async def me(self, site_reference: str | None = None) -> Me:
-        """Get 'Me' data.
-
-        Full query:
-        query Me($siteReference: String) {
-            me {
-                ...UserFields
-            }
-        }
-        fragment UserFields on User {
-            id
-            email
-            countryCode
-            advancedPaymentAmount(siteReference: $siteReference)
-            treesCount
-            hasInviteLink
-            hasCO2Compensation
-            notification
-            createdAt
-            InviteLinkUser {
-                id
-                fromName
-                slug
-                treesAmountPerConnection
-                discountPerConnection
-            }
-            connections(siteReference: $siteReference) {
-                id
-                connectionId
-                EAN
-                segment
-                status
-                contractStatus
-                estimatedFeedIn
-                firstMeterReadingDate
-                lastMeterReadingDate
-                meterType
-                externalDetails {
-                    gridOperator
-                    address {
-                        street
-                        houseNumber
-                        houseNumberAddition
-                        zipCode
-                        city
-                    }
-                }
-            }
-            externalDetails {
-                reference
-                person {
-                    firstName
-                    lastName
-                }
-                contact {
-                    emailAddress
-                    phoneNumber
-                    mobileNumber
-                }
-                address {
-                    street
-                    houseNumber
-                    houseNumberAddition
-                    zipCode
-                    city
-                }
-                debtor {
-                    bankAccountNumber
-                    preferredAutomaticCollectionDay
-                }
-            }
-            PushNotificationPriceAlerts {
-                id
-                isEnabled
-                type
-                weekdays
-            }
-            UserSettings {
-                id
-                disabledHapticFeedback
-                jedlixUserId
-                jedlixPushNotifications
-                smartPushNotifications
-            }
-            activePaymentAuthorization {
-                id
-                mandateId
-                signedAt
-                bankAccountNumber
-            }
-            meterReadingExportPeriods(siteReference: $siteReference) {
-                EAN
-                cluster
-                segment
-                from
-                till
-                period
-                type
-            }
-            deliverySites {
-                reference
-                segments
-                address {
-                    street
-                    houseNumber
-                    houseNumberAddition
-                    zipCode
-                    city
-                }
-                addressHasMultipleSites
-                status
-                propositionType
-                deliveryStartDate
-                deliveryEndDate
-                firstMeterReadingDate
-                lastMeterReadingDate
-            }
-            smartCharging {
-                isActivated
-                provider
-                userCreatedAt
-                userId
-                isAvailableInCountry
-                needsSubscription
-                subscription {
-                    startDate
-                    endDate
-                    id
-                    proposition {
-                        product
-                        countryCode
-                    }
-                }
-            }
-            websiteUrl
-            customerSupportEmail
-            }
-
-        """
-        if self._auth is None:
-            raise AuthRequiredException
-
-        query = {
-            "query": """
-                query Me($siteReference: String) {
-                    me {
-                        ...UserFields
-                    }
-                }
-                fragment UserFields on User {
-                    id
-                    email
-                    countryCode
-                    advancedPaymentAmount(siteReference: $siteReference)
-                    treesCount
-                    hasInviteLink
-                    hasCO2Compensation
-                    deliverySites {
-                        reference
-                        segments
-                        address {
-                            street
-                            houseNumber
-                            houseNumberAddition
-                            zipCode
-                            city
-                        }
-                        status
-                    }
-                }
-            """,
-            "operationName": "Me",
-            "variables": {"siteReference": site_reference},
-        }
-
-        return Me.from_dict(await self._query(query))
-
     async def prices(
         self, start_date: date, end_date: date | None = None
     ) -> MarketPrices:
@@ -491,6 +314,40 @@ class FrankEnergie:
         }
 
         return MarketPrices.from_userprices_dict(await self._query(query_data))
+
+    async def user_sites(self) -> UserSites:
+        """Get user sites."""
+
+        if self._auth is None:
+            raise AuthRequiredException
+
+        query_data = {
+            "query": """
+                 query UserSites {
+                      userSites {
+                        address {
+                          street
+                          houseNumber
+                          houseNumberAddition
+                          zipCode
+                          city
+                        }
+                        addressHasMultipleSites
+                        deliveryEndDate
+                        deliveryStartDate
+                        firstMeterReadingDate
+                        lastMeterReadingDate
+                        propositionType
+                        reference
+                        segments
+                        status
+                      }
+                    }
+            """,
+            "operationName": "UserSites",
+        }
+
+        return UserSites.from_dict(await self._query(query_data))
 
     async def smart_batteries(self) -> SmartBatteries:
         """Get the users smart batteries.

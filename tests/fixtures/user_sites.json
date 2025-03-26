@@ -1,0 +1,48 @@
+{
+    "data": {
+        "userSites": [
+            {
+                "address": {
+                    "street": "Oudestraat",
+                    "houseNumber": "1898",
+                    "houseNumberAddition": null,
+                    "zipCode": "5171 KW",
+                    "city": "Kaatsheuvel"
+                },
+                "addressHasMultipleSites": false,
+                "deliveryStartDate": "2023-03-09",
+                "deliveryEndDate": "2024-01-08",
+                "firstMeterReadingDate": "2023-03-09",
+                "lastMeterReadingDate": "2024-01-07",
+                "propositionType": "DYNAMIC",
+                "reference": "5171 KW 1234567",
+                "segments": [
+                    "ELECTRICITY",
+                    "GAS"
+                ],
+                "status": "DELIVERY_ENDED"
+            },
+            {
+                "address": {
+                    "street": "Sesamstraat",
+                    "houseNumber": "123",
+                    "houseNumberAddition": null,
+                    "zipCode": "1234 AB",
+                    "city": "AMSTERDAM"
+                },
+                "addressHasMultipleSites": false,
+                "deliveryEndDate": null,
+                "deliveryStartDate": "2023-12-20",
+                "firstMeterReadingDate": "2023-12-10",
+                "lastMeterReadingDate": "2024-02-24",
+                "propositionType": "DYNAMIC",
+                "reference": "1234 AB 1234568",
+                "segments": [
+                    "ELECTRICITY",
+                    "GAS"
+                ],
+                "status": "IN_DELIVERY"
+            }
+        ]
+    }
+}

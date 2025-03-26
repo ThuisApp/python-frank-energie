@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import jwt
 from dateutil import parser
@@ -110,100 +110,6 @@ class Invoices:
             upcomingPeriodInvoice=Invoices.Invoice.from_dict(
                 payload.get("upcomingPeriodInvoice")
             ),
-        )
-
-
-@dataclass
-class Me:
-    """Me data, including the current status of the connection."""
-
-    id: str
-    email: str
-    countryCode: str
-    advancedPaymentAmount: float
-    treesCount: int
-    hasInviteLink: bool
-    hasCO2Compensation: bool
-    deliverySites: list[DeliverySites]
-
-    @dataclass
-    class DeliverySites:
-        """Delivery sites data, including the address and delivery status.
-
-        {
-            "reference": "1082MK 10",
-            "segments": [
-                "ELECTRICITY",
-                "GAS"
-            ],
-            "address": {
-                "street": "Gustav Mahlerlaan",
-                "houseNumber": "1025",
-                "houseNumberAddition": null,
-                "zipCode": "1082 MK",
-                "city": "AMSTERDAM"
-            },
-            "addressHasMultipleSites": false,
-            "status": "DELIVERY_ENDED",
-            "propositionType": null,
-            "deliveryStartDate": "2023-01-05",
-            "deliveryEndDate": "2024-02-09",
-            "firstMeterReadingDate": "2023-01-05",
-            "lastMeterReadingDate": "2024-02-08"
-        },
-        """
-
-        reference: str
-        segments: list[str]
-        address_street: str
-        address_houseNumber: str
-        address_houseNumberAddition: str | None
-        address_zipCode: str
-        address_city: str
-        status: str
-
-        @staticmethod
-        def from_dict(payload: dict[str, str]) -> Me.DeliverySites:
-            """Parse the response from the me query."""
-            _LOGGER.debug("DeliverySites %s", payload)
-
-            return Me.DeliverySites(
-                reference=payload.get("reference"),
-                segments=payload.get("segments"),
-                address_street=payload.get("address").get("street"),
-                address_houseNumber=payload.get("address").get("houseNumber"),
-                address_houseNumberAddition=payload.get("address").get(
-                    "houseNumberAddition"
-                ),
-                address_zipCode=payload.get("address").get("zipCode"),
-                address_city=payload.get("address").get("city"),
-                status=payload.get("status"),
-            )
-
-    @staticmethod
-    def from_dict(data: dict[str, str]) -> Me:
-        """Parse the response from the me query."""
-        _LOGGER.debug("User %s", data)
-
-        if errors := data.get("errors"):
-            raise RequestException(errors[0]["message"])
-
-        payload = data.get("data", {}).get("me")
-        if not payload:
-            raise RequestException("Unexpected response")
-
-        return Me(
-            id=payload.get("id"),
-            email=payload.get("email"),
-            countryCode=payload.get("countryCode"),
-            advancedPaymentAmount=payload.get("advancedPaymentAmount"),
-            treesCount=payload.get("treesCount"),
-            hasInviteLink=payload.get("hasInviteLink"),
-            hasCO2Compensation=payload.get("hasCO2Compensation"),
-            deliverySites=[
-                Me.DeliverySites.from_dict(site)
-                for site in payload.get("deliverySites")
-            ],
         )
 
 
@@ -419,6 +325,85 @@ class MarketPrices:
             electricity=PriceData(customerMarketPrices.get("electricityPrices")),
             gas=PriceData(customerMarketPrices.get("gasPrices")),
         )
+
+@dataclass
+class UserSites:
+    """Collections of the users sites.
+
+    {
+        "data": {
+            "userSites": [
+                {
+                    "address": {
+                        "street": "Gustav Mahlerlaan",
+                        "houseNumber": "1025",
+                        "houseNumberAddition": null,
+                        "zipCode": "1082 MK",
+                        "city": "AMSTERDAM"
+                    },
+                    "addressHasMultipleSites": false,
+                    "deliveryStartDate": "2023-01-05",
+                    "deliveryEndDate": "2024-02-09",
+                    "firstMeterReadingDate": "2023-01-05",
+                    "lastMeterReadingDate": "2024-02-08"
+                    "propositionType": "DYNAMIC",
+                    "reference": "1343AP 22 1463123",
+                    "segments": [
+                        "ELECTRICITY",
+                        "GAS"
+                    ],
+                    "status": "IN_DELIVERY"
+                }
+            ]
+        }
+    }"""
+
+    address_street: str
+    address_houseNumber: str
+    address_houseNumberAddition: str | None
+    address_zipCode: str
+    address_city: str
+    addressHasMultipleSites: bool
+    deliveryEndDate: date | None
+    deliveryStartDate: date
+    firstMeterReadingDate: date
+    lastMeterReadingDate: date
+    propositionType: str
+    reference: str
+    segments: list[str]
+    status: str
+
+    @staticmethod
+    def from_dict(data: dict[str, str]) -> UserSites:
+        """Parse the response from the userSites query."""
+        _LOGGER.debug("UserSites %s", data)
+
+        if errors := data.get("errors"):
+            raise RequestException(errors[0]["message"])
+
+        payload = data.get("data", {}).get("userSites")
+        if not payload:
+            raise RequestException("Unexpected response")
+
+        return UserSites(
+            address_street=payload.get("address").get("street"),
+            address_houseNumber=payload.get("address").get("houseNumber"),
+            address_houseNumberAddition=payload.get("address").get(
+                "houseNumberAddition"
+            ),
+            address_zipCode=payload.get("address").get("zipCode"),
+            address_city=payload.get("address").get("city"),
+            addressHasMultipleSites=payload.get("addressHasMultipleSites"),
+            deliveryEndDate=payload.get("deliveryEndDate"),
+            deliveryStartDate=payload.get("deliveryStartDate"),
+            firstMeterReadingDate=payload.get("firstMeterReadingDate"),
+            lastMeterReadingDate=payload.get("lastMeterReadingDate"),
+            propositionType=payload.get("propositionType"),
+            reference=payload.get("reference"),
+            segments=payload.get("segments"),
+            status=payload.get("status"),
+        )
+
 
 
 @dataclass
