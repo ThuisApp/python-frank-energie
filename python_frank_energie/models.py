@@ -326,6 +326,7 @@ class MarketPrices:
             gas=PriceData(customerMarketPrices.get("gasPrices")),
         )
 
+
 @dataclass
 class UserSites:
     """Collections of the users sites.
@@ -356,7 +357,8 @@ class UserSites:
                 }
             ]
         }
-    }"""
+    }
+    """
 
     address_street: str
     address_houseNumber: str
@@ -403,7 +405,6 @@ class UserSites:
             segments=payload.get("segments"),
             status=payload.get("status"),
         )
-
 
 
 @dataclass
