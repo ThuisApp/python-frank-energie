@@ -11,8 +11,8 @@ from python_frank_energie.models import (
     Authentication,
     Invoices,
     MarketPrices,
-    Me,
     MonthSummary,
+    UserSites,
 )
 
 from . import load_fixtures
@@ -53,35 +53,35 @@ def test_authentication_error_message():
 
 
 #
-# Tests for Me Model.
+# Tests for UserSites Model.
 #
 
 
-def test_me_with_expected_parameters(snapshot: SnapshotAssertion):
-    """Test Me.from_dict with expected parameters."""
-    me = Me.from_dict(json.loads(load_fixtures("me.json")))
-    assert me
-    assert me == snapshot
+def test_user_sites_with_expected_parameters(snapshot: SnapshotAssertion):
+    """Test UserSites.from_dict with expected parameters."""
+    user_sites = UserSites.from_dict(json.loads(load_fixtures("user_sites.json")))
+    assert user_sites
+    assert user_sites == snapshot
 
 
-def test_me_with_missing_parameters():
-    """Test Me.from_dict with missing parameters."""
+def test_user_sites_with_missing_parameters():
+    """Test UserSites.from_dict with missing parameters."""
     with pytest.raises(RequestException) as excinfo:
-        Me.from_dict({})
+        UserSites.from_dict({})
 
     assert "Unexpected response" in str(excinfo.value)
 
 
-def test_me_with_unexpected_response():
-    """Test Me.from_dict with unexpected response."""
+def test_user_sites_with_unexpected_response():
+    """Test UserSites.from_dict with unexpected response."""
     with pytest.raises(RequestException):
-        Me.from_dict({"data": {"me": None}})
+        UserSites.from_dict({"data": {"userSites": None}})
 
 
-def test_me_error_message():
-    """Test Me.from_dict with error message."""
+def test_user_sites_error_message():
+    """Test UserSites.from_dict with error message."""
     with pytest.raises(RequestException) as excinfo:
-        Me.from_dict({"errors": [{"message": "help me"}]})
+        UserSites.from_dict({"errors": [{"message": "help me"}]})
 
     assert "help me" in str(excinfo.value)
 

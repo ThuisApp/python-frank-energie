@@ -257,14 +257,14 @@ async def test_invoices_without_authentication(aresponses):
 
 
 @pytest.mark.asyncio
-async def test_me(aresponses, snapshot: SnapshotAssertion):
+async def test_user_sites(aresponses, snapshot: SnapshotAssertion):
     """Test request with authentication."""
     aresponses.add(
         SIMPLE_DATA_URL,
         "/",
         "POST",
         aresponses.Response(
-            text=load_fixtures("me.json"),
+            text=load_fixtures("user_sites.json"),
             status=200,
             headers={"Content-Type": "application/json"},
         ),
@@ -272,23 +272,23 @@ async def test_me(aresponses, snapshot: SnapshotAssertion):
 
     async with aiohttp.ClientSession() as session:
         api = FrankEnergie(session, auth_token="a", refresh_token="b")  # noqa: S106
-        me = await api.me("1234AB 10")
+        user_sites = await api.user_sites()
         await api.close()
 
-    assert me is not None
-    assert me == snapshot
+    assert user_sites is not None
+    assert user_sites == snapshot
 
 
 @pytest.mark.asyncio
-async def test_me_without_authentication(aresponses):
+async def test_user_sites_without_authentication(aresponses):
     """Test request without authentication.
 
-    'user' request requires authentication.
+    'user_sites' request requires authentication.
     """
     async with aiohttp.ClientSession() as session:
         api = FrankEnergie(session)
         with pytest.raises(AuthRequiredException):
-            await api.me("1234AB 10")
+            await api.user_sites()
         await api.close()
 
 
