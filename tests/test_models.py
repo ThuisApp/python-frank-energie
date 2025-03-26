@@ -75,7 +75,7 @@ def test_user_sites_with_missing_parameters():
 def test_user_sites_with_unexpected_response():
     """Test UserSites.from_dict with unexpected response."""
     with pytest.raises(RequestException):
-        UserSites.from_dict({"data": {"user_sites": None}})
+        UserSites.from_dict({"data": {"userSites": None}})
 
 
 def test_user_sites_error_message():
