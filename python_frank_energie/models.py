@@ -407,6 +407,86 @@ class UserSites:
 
 
 @dataclass
+class UserSites:
+    """Collections of the users sites.
+
+    {
+        "data": {
+            "userSites": [
+                {
+                    "address": {
+                        "street": "Gustav Mahlerlaan",
+                        "houseNumber": "1025",
+                        "houseNumberAddition": null,
+                        "zipCode": "1082 MK",
+                        "city": "AMSTERDAM"
+                    },
+                    "addressHasMultipleSites": false,
+                    "deliveryStartDate": "2023-01-05",
+                    "deliveryEndDate": "2024-02-09",
+                    "firstMeterReadingDate": "2023-01-05",
+                    "lastMeterReadingDate": "2024-02-08"
+                    "propositionType": "DYNAMIC",
+                    "reference": "1343AP 22 1463123",
+                    "segments": [
+                        "ELECTRICITY",
+                        "GAS"
+                    ],
+                    "status": "IN_DELIVERY"
+                }
+            ]
+        }
+    }
+    """
+
+    address_street: str
+    address_houseNumber: str
+    address_houseNumberAddition: str | None
+    address_zipCode: str
+    address_city: str
+    addressHasMultipleSites: bool
+    deliveryEndDate: date | None
+    deliveryStartDate: date
+    firstMeterReadingDate: date
+    lastMeterReadingDate: date
+    propositionType: str
+    reference: str
+    segments: list[str]
+    status: str
+
+    @staticmethod
+    def from_dict(data: dict[str, str]) -> UserSites:
+        """Parse the response from the userSites query."""
+        _LOGGER.debug("UserSites %s", data)
+
+        if errors := data.get("errors"):
+            raise RequestException(errors[0]["message"])
+
+        payload = data.get("data", {}).get("userSites")
+        if not payload:
+            raise RequestException("Unexpected response")
+
+        return UserSites(
+            address_street=payload.get("address").get("street"),
+            address_houseNumber=payload.get("address").get("houseNumber"),
+            address_houseNumberAddition=payload.get("address").get(
+                "houseNumberAddition"
+            ),
+            address_zipCode=payload.get("address").get("zipCode"),
+            address_city=payload.get("address").get("city"),
+            addressHasMultipleSites=payload.get("addressHasMultipleSites"),
+            deliveryEndDate=payload.get("deliveryEndDate"),
+            deliveryStartDate=payload.get("deliveryStartDate"),
+            firstMeterReadingDate=payload.get("firstMeterReadingDate"),
+            lastMeterReadingDate=payload.get("lastMeterReadingDate"),
+            propositionType=payload.get("propositionType"),
+            reference=payload.get("reference"),
+            segments=payload.get("segments"),
+            status=payload.get("status"),
+        )
+
+
+@dataclass
 class SmartBatteries:
     """Collection of the users SmartBatteries."""
 

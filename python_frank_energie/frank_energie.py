@@ -317,7 +317,6 @@ class FrankEnergie:
 
     async def user_sites(self) -> UserSites:
         """Get user sites."""
-
         if self._auth is None:
             raise AuthRequiredException
 

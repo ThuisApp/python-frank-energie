@@ -11,8 +11,8 @@ from python_frank_energie.models import (
     Authentication,
     Invoices,
     MarketPrices,
-    Me,
-    MonthSummary, UserSites,
+    MonthSummary,
+    UserSites,
 )
 
 from . import load_fixtures
